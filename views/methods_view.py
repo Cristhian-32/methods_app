@@ -1,7 +1,7 @@
 import tkinter as tk
 
 class MethodsView(tk.Frame):
-    def __init__(self, master, bisection_callback, false_position_callback, raphson_callback, secante_callback):
+    def __init__(self, master, bisection_callback, false_position_callback, raphson_callback, secante_callback, graph_callback):
         super().__init__(master, bg="#121212")
         self.pack(expand=True, fill="both")
 
@@ -12,6 +12,26 @@ class MethodsView(tk.Frame):
             fg="#E0E0E0",
             bg="#121212"
         )
+
+        self.label.pack(pady=30)
+
+        self.bisection_button = tk.Button(
+            self,
+            text="Método de Bisección",
+            command=bisection_callback,
+            font=("Helvetica", 14, "bold"),
+            bg="#1F1F1F",
+            fg="white",
+            activebackground="#333333",
+            activeforeground="white",
+            bd=0,
+            padx=20,
+            pady=10
+        )
+        self.bisection_button.pack(pady=10)
+
+        self.label.pack(pady=30)
+
         self.label.pack(pady=30)
 
         self.bisection_button = tk.Button(
@@ -79,6 +99,23 @@ class MethodsView(tk.Frame):
             pady=10
         )
         self.secante_button.pack(pady=10)
+
+        self.label.pack(pady=30)
+
+        self.graph_button = tk.Button(
+            self,
+            text="Graficar Función",
+            command=graph_callback,
+            font=("Helvetica", 14, "bold"),
+            bg="#1F1F1F",
+            fg="white",
+            activebackground="#333333",
+            activeforeground="white",
+            bd=0,
+            padx=20,
+            pady=10
+        )
+        self.graph_button.pack(pady=10)
 
 
     def select_bisection(self):

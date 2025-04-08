@@ -4,6 +4,7 @@ from views.bisection_view import BisectionView
 from views.false_postion_view import FalsePositionView
 from views.raphson_view import RaphsonView
 from views.secante_view import SecanteView
+from views.graph_view import GraphView
 from models.bisection import metodo_biseccion
 from models.false_proposition import metodo_falsa_posicion
 from models.raphson import metodo_raphson
@@ -21,7 +22,7 @@ class AppController:
     def __init__(self, root):
         self.root = root
         self.root.title("Métodos Numéricos")
-        self.root.geometry("700x500")
+        self.root.geometry("700x600")
         self.current_view = None
         self.popups_abiertos = []
         self.show_welcome()
@@ -39,7 +40,7 @@ class AppController:
 
     def show_methods(self):
         self.clear_view()
-        self.current_view = MethodsView(self.root, self.show_bisection, self.show_false_position, self.show_raphson, self.show_secante)
+        self.current_view = MethodsView(self.root, self.show_bisection, self.show_false_position, self.show_raphson, self.show_secante, self.show_graph)
 
     def clear_view(self):
         if self.current_view:
@@ -60,6 +61,10 @@ class AppController:
     def show_secante(self):
         self.clear_view()
         self.current_view = SecanteView(self.root, self.calculate_secante, self.show_methods)
+
+    def show_graph(self):
+        self.clear_view()
+        self.current_view = GraphView(self.root, self.mostrar_grafica_intervalo, self.show_methods)
 
     def buscar_intervalo(self):
         # Validamos que la vista actual tenga los campos necesarios
@@ -162,6 +167,60 @@ class AppController:
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
         self.popups_abiertos.append(self.grafica_popup)
+
+    def _mostrar_grafica_intervalo(self, funcion_str, a, b):
+        # Función para graficar dentro de un intervalo específico
+        self.grafica_popup = tk.Toplevel(self.root)
+        self.grafica_popup.title("Gráfica de la función")
+        self.grafica_popup.geometry("600x400")
+
+        # Definir la función matemática usando sympy (como en los otros métodos)
+        x = Symbol('x')
+        try:
+            funcion = sympify(funcion_str)
+            f = lambdify(x, funcion, modules=["math"])  # Generamos la función numérica
+        except Exception as e:
+            self._show_popup("Error", f"No se pudo graficar la función: {e}")
+            return
+
+        # Generar los valores de x para el intervalo especificado
+        x_vals = np.linspace(a - 2, b + 2, 400)  # Extender un poco el intervalo para mejor visualización
+        try:
+            y_vals = [f(x_val) for x_val in x_vals]
+        except Exception as e:
+            self._show_popup("Error", f"No se pudo graficar la función: {e}")
+            return
+
+        # Crear la gráfica
+        fig, ax = plt.subplots(figsize=(6, 4), dpi=100)
+        ax.plot(x_vals, y_vals, label=f"f(x) = {funcion_str}")
+        ax.axhline(0, color='gray', linestyle='--')  # Línea horizontal en y=0
+        ax.axvline(a, color='red', linestyle='--', label=f"a = {int(a) if a.is_integer() else a}")
+        ax.axvline(b, color='green', linestyle='--', label=f"b = {int(b) if b.is_integer() else b}")
+        ax.set_title("Gráfica de la función en el intervalo")
+        ax.legend()
+
+        # Mostrar la gráfica en el popup
+        canvas = FigureCanvasTkAgg(fig, master=self.grafica_popup)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        # Añadir el popup de la gráfica a la lista de popups abiertos
+        self.popups_abiertos.append(self.grafica_popup)
+    
+    def mostrar_grafica_intervalo(self):
+        view = self.current_view  # Obtener la vista actual
+        try:
+            funcion_str = view.function_entry.get()  # Función ingresada
+            a = float(view.a_entry.get())  # Valor de 'a'
+            b = float(view.b_entry.get())  # Valor de 'b'
+        except ValueError:
+            self._show_popup("Error", "Verifica que todos los campos estén correctamente llenos.")
+            return
+
+        # Llamar a la función de graficado
+        self.cerrar_popups()
+        self._mostrar_grafica_intervalo(funcion_str, a, b)
 
 
     def calculate_bisection(self):
