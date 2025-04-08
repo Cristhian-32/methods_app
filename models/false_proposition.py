@@ -19,9 +19,12 @@ def metodo_falsa_posicion(funcion_str, a, b, tolerancia, max_iter):
         return {"error": "f(a) y f(b) deben tener signos opuestos."}
 
     iteraciones = 0
-    while (b - a) > tolerancia and iteraciones < max_iter:
+    historial = []
+    raiz_anterior = None  # Inicializamos una variable para la raíz anterior
+    
+    while abs(b - a) > tolerancia and iteraciones < max_iter:
         # Calcular el punto de la falsa posición
-        c = b - (f_b * (b - a)) / (f_b - f_a)
+        c = (a * f_b - b * f_a) / (f_b - f_a)
         f_c = f(c)
 
         if f_c == 0:
@@ -36,43 +39,27 @@ def metodo_falsa_posicion(funcion_str, a, b, tolerancia, max_iter):
             f_a = f_c
 
         iteraciones += 1
+        raiz_aproximada = c
+        
+        # Calcular tolerancia solo si no es la primera iteración
+        if raiz_anterior is not None:
+            tolerancia_porcentaje = abs(raiz_aproximada - raiz_anterior) * 100
+        else:
+            tolerancia_porcentaje = None  # No calculamos tolerancia en la primera iteración
 
-    raiz_aproximada = c
-    tolerancia_porcentaje = ((b - a) / 2) * 100  # Lo convertimos a porcentaje
+        # Guardamos la raíz actual como la anterior para la siguiente iteración
+        raiz_anterior = raiz_aproximada
+        
+        historial.append({
+            "iteracion": iteraciones,
+            "raiz": raiz_aproximada,
+            "tolerancia": tolerancia_porcentaje if tolerancia_porcentaje is not None else "N/A"
+        })
 
     return {
         "raiz": raiz_aproximada,
         "iteraciones": iteraciones,
         "tolerancia": tolerancia_porcentaje,
+        "historial": historial,
         "exito": True
     }
-
-def buscar_intervalo(funcion_str):
-    x = Symbol('x')
-
-    try:
-        funcion = sympify(funcion_str)
-        f = lambdify(x, funcion, modules=["math"])
-    except Exception as e:
-        return {"error": f"No se pudo interpretar la función: {e}"}
-
-    # Exploramos el rango de enteros de -10 a 10
-    candidatos = []
-
-    for i in range(-10, 10):
-        xi = i
-        xf = i + 1
-        try:
-            if f(xi) * f(xf) < 0:  # Cambio de signo entre i y i+1
-                candidatos.append((xi, xf))
-        except:
-            continue
-
-    if not candidatos:
-        return {"error": "No se encontró cambio de signo en el rango [-10, 10]."}
-
-    # Elegir el intervalo más cercano a cero en valor absoluto
-    mejor = min(candidatos, key=lambda par: abs(par[0]) + abs(par[1]))
-    a, b = mejor
-
-    return {"a": a, "b": b}

@@ -19,6 +19,7 @@ def metodo_biseccion(funcion_str, a, b, tolerancia, max_iter):
         return {"error": "f(a) y f(b) deben tener signos opuestos."}
 
     iteraciones = 0
+    historial = []
     while (b - a) / 2 > tolerancia and iteraciones < max_iter:
         c = (a + b) / 2
         f_c = f(c)
@@ -33,45 +34,19 @@ def metodo_biseccion(funcion_str, a, b, tolerancia, max_iter):
         iteraciones += 1
 
         raiz_aproximada = (a + b) / 2
-
         tolerancia_porcentaje =  ((b - a) / 2)*100# Lo convertimos a porcentaje
+
+        historial.append({
+            "iteracion": iteraciones,
+            "raiz": raiz_aproximada,
+            "tolerancia": tolerancia_porcentaje
+        })
 
     return {
         "raiz": raiz_aproximada,
         "iteraciones": iteraciones,
         "tolerancia": tolerancia_porcentaje,
+        "historial": historial,
         "exito": True
     }
-
-def buscar_intervalo(funcion_str):
-    x = Symbol('x')
-
-    try:
-        funcion = sympify(funcion_str)
-        f = lambdify(x, funcion, modules=["math"])
-    except Exception as e:
-        return {"error": f"No se pudo interpretar la función: {e}"}
-
-    # Exploramos el rango de enteros de -10 a 10
-    candidatos = []
-
-    for i in range(-10, 10):
-        xi = i
-        xf = i + 1
-        try:
-            if f(xi) * f(xf) < 0:  # Cambio de signo entre i y i+1
-                candidatos.append((xi, xf))
-        except:
-            continue
-
-    if not candidatos:
-        return {"error": "No se encontró cambio de signo en el rango [-10, 10]."}
-
-    # Elegir el intervalo más cercano a cero en valor absoluto
-    mejor = min(candidatos, key=lambda par: abs(par[0]) + abs(par[1]))
-    a, b = mejor
-
-    return {"a": a, "b": b}
-
-
 

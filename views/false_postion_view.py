@@ -17,11 +17,11 @@ class FalsePositionView(tk.Frame):
         title.pack(pady=20)
 
         # Función
-        self.function_entry = self._create_labeled_entry("Función f(x):", "x**3 - x - 2")
+        self.function_entry = self._create_labeled_entry("Función f(x):", "x*sin(x)")
 
         # Intervalo [a, b]
-        self.a_entry = self._create_labeled_entry("Valor de a:", "1")
-        self.b_entry = self._create_labeled_entry("Valor de b:", "2")
+        self.a_entry = self._create_labeled_entry("Valor de a:", "7.7")
+        self.b_entry = self._create_labeled_entry("Valor de b:", "10")
 
         # Tolerancia
         self.tol_entry = self._create_labeled_entry("Tolerancia:", "0.0001")

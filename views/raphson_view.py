@@ -1,15 +1,15 @@
 import tkinter as tk
 
-class BisectionView(tk.Frame):
-    def __init__(self, master, calculate_callback, buscar_callback, back_callback):
+class RaphsonView(tk.Frame):
+    def __init__(self, master, calculate_callback, back_callback):
         super().__init__(master, bg="#121212")
         self.pack(expand=True, fill="both")
-        master.title("Método de Bisección")
+        master.title("Método de Newton-Raphson")
 
         # Título
         title = tk.Label(
             self,
-            text="Método de Bisección",
+            text="Método de Newton-Raphson",
             font=("Helvetica", 18, "bold"),
             fg="#E0E0E0",
             bg="#121212"
@@ -17,33 +17,16 @@ class BisectionView(tk.Frame):
         title.pack(pady=20)
 
         # Función
-        self.function_entry = self._create_labeled_entry("Función f(x):", "5*sin(x)-x")
+        self.function_entry = self._create_labeled_entry("Función f(x):", "x*exp(2*x)-3")
 
-        # Intervalo [a, b]
-        self.a_entry = self._create_labeled_entry("Valor de a:", "-0.5")
-        self.b_entry = self._create_labeled_entry("Valor de b:", "1")
+        # Valor Inicial
+        self.x0_entry = self._create_labeled_entry("Valor Inicial:", "1.5")
 
         # Tolerancia
         self.tol_entry = self._create_labeled_entry("Tolerancia:", "0.01")
 
         # Iteraciones máximas
         self.max_iter_entry = self._create_labeled_entry("Iteraciones máximas:", "100")
-
-        # Botón para buscar intervalo automáticamente
-        buscar_intervalo_button = tk.Button(
-            self,
-            text="Buscar intervalo automático",
-            command=buscar_callback,
-            font=("Helvetica", 12),
-            bg="#2C2C2C",
-            fg="white",
-            activebackground="#444444",
-            activeforeground="white",
-            bd=0,
-            padx=15,
-            pady=8
-        )
-        buscar_intervalo_button.pack(pady=10)
 
         # Botón calcular
         calculate_button = tk.Button(
